@@ -145,12 +145,15 @@ $( document ).ready(function() {
         if (name.val() == "") {    
             showHideNotification('Name cannot be empty', true, name);
             name.addClass('input-error');
+            return false;
         }else if (regexName(name) == false) {
             showHideNotification('Name must be within 5 - 20 characters and cannot contain numbers', true, name);
             name.addClass('input-error');
+            return false;
         }else {
             showHideNotification('', false,name);
             name.removeClass('input-error');
+            return true;
         }
     }
 
@@ -159,12 +162,15 @@ $( document ).ready(function() {
         if (email.val() == "") {
             showHideNotification('Email cannot be empty', true, email);
             email.addClass('input-error');
+            return false;
         }else if (regexEmail(email) == false) {
             showHideNotification('Enter a valid email address', true, email);
             email.addClass('input-error');
+            return false;
         }else {
             showHideNotification('', false,email);
             email.removeClass('input-error');
+            return true;
         }
     }
 
@@ -177,8 +183,9 @@ $( document ).ready(function() {
             $total = 0;
             $('#total-value').text('$' + $total);
             $('.activities > #form-field > legend').addClass('input-error'); 
-        } else {
-            $('.activities > #form-field > legend').removeClass('input-error');
+            return false;
+        } else if (element != null){
+           $('.activities > #form-field > legend').removeClass('input-error');
         if (element.prop('name') == "all" && element.is(':checked')) {
             $total = $total + 200;
            $('#total-value').text('$' + $total);       
@@ -240,6 +247,7 @@ $( document ).ready(function() {
             $('#total-value').text('$' + $total); 
         } 
         $('.activities .notification').hide();
+        return true;
     }
 
     }
@@ -264,28 +272,48 @@ $( document ).ready(function() {
 
 
 
+    //Validate cerditcard 
+    function validateccinfo() {
+        if (validateCreditCard($('#cc-num')) == false || validateCVV($('#cvv')) == false || validateZipcode($('#zip')) == false) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     // Handling validation on submit button     
     $('#register-form').submit(function(event){
 
-        //Prevent default refresh of the page
+   
+    if (validateName($('#name')) == false) { 
+        validateName($('#name'));
         event.preventDefault();
-       
-        
-        validateName($('#name')); //Validate Name
-        validateEmail($('#mail')); //Validate Email
-        
-        //Validate Credit Card Information
-        if ($("#payment option:selected").text() == "Credit Card") {
-        validateCreditCard($('#cc-num'));
-        validateCVV($('#cvv'));
-        validateZipcode($('#zip'));
+     }
+    if (validateEmail($('#mail')) == false) {
+        validateEmail($('#mail'));
+        event.preventDefault();
+     } 
+     if ( validateActivities() == false) {
+        validateActivities()
+        event.preventDefault();
+     } 
+     if ($("#payment option:selected").text() == "Credit Card") {
+        if (validateCreditCard($('#cc-num')) == false) {
+            validateCreditCard($('#cc-num'));
+            event.preventDefault();
+        } 
+        if (validateCVV($('#cvv')) == false){
+            validateCVV($('#cvv'));
+            event.preventDefault();
+        } 
+        if (validateZipcode($('#zip')) == false) {
+            validateZipcode($('#zip'));
+            event.preventDefault();
         }
 
-        //Vaidate Activities
-        validateActivities();
-    });
+     }
 
+
+     });
 
 });
-
-
